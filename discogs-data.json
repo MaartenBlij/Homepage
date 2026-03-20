@@ -1,0 +1,50 @@
+{
+  "fetched_at": "2026-03-20T16:50:34.162Z",
+  "releases": [
+    {
+      "id": 35438020,
+      "date_added": "2026-03-12T03:08:41-07:00",
+      "title": "Horizons/West",
+      "artist": "Thrice",
+      "cover_image": "https://i.discogs.com/c-CQ751j8X7i3qOtyOvFvlCXINCA2p3-SRntyJMroOU/rs:fit/g:sm/q:90/h:594/w:600/czM6Ly9kaXNjb2dz/LWRhdGFiYXNlLWlt/YWdlcy9SLTM1NDM4/MDIwLTE3NjEwNjQ1/MTgtODU5OC5qcGVn.jpeg",
+      "thumb": "https://i.discogs.com/fT5nFpQAxmp3BNLZDqzwyaPqnGyPogAfP-lyw4TSX6k/rs:fit/g:sm/q:40/h:150/w:150/czM6Ly9kaXNjb2dz/LWRhdGFiYXNlLWlt/YWdlcy9SLTM1NDM4/MDIwLTE3NjEwNjQ1/MTgtODU5OC5qcGVn.jpeg",
+      "year": 2025
+    },
+    {
+      "id": 24860105,
+      "date_added": "2025-12-16T01:39:47-08:00",
+      "title": "True Power",
+      "artist": "I Prevail",
+      "cover_image": "https://i.discogs.com/cxyBSE148y7G5D6FKBU5rkDJuQKRxrpm_iI4SSfyvoY/rs:fit/g:sm/q:90/h:600/w:594/czM6Ly9kaXNjb2dz/LWRhdGFiYXNlLWlt/YWdlcy9SLTI0ODYw/MTA1LTE2OTkyMjc0/OTUtNjEyOC5qcGVn.jpeg",
+      "thumb": "https://i.discogs.com/7XEouwEsjcahaRRezVi3k8M8IyRD3KjzfuvQlYD1XH8/rs:fit/g:sm/q:40/h:150/w:150/czM6Ly9kaXNjb2dz/LWRhdGFiYXNlLWlt/YWdlcy9SLTI0ODYw/MTA1LTE2OTkyMjc0/OTUtNjEyOC5qcGVn.jpeg",
+      "year": 2022
+    },
+    {
+      "id": 3653347,
+      "date_added": "2024-08-01T12:00:31-07:00",
+      "title": "Wasting Light",
+      "artist": "Foo Fighters",
+      "cover_image": "https://i.discogs.com/ChuAJG5Js4zaYo4Q3wnKobBOwF68uHIWwvAFms92wis/rs:fit/g:sm/q:90/h:593/w:600/czM6Ly9kaXNjb2dz/LWRhdGFiYXNlLWlt/YWdlcy9SLTM2NTMz/NDctMTQzMDc1MDk4/Ny0yNDQ0LmpwZWc.jpeg",
+      "thumb": "https://i.discogs.com/dOFU1o0I49eNX688VEi0volbwuOTpNWHymCMxvet9rQ/rs:fit/g:sm/q:40/h:150/w:150/czM6Ly9kaXNjb2dz/LWRhdGFiYXNlLWlt/YWdlcy9SLTM2NTMz/NDctMTQzMDc1MDk4/Ny0yNDQ0LmpwZWc.jpeg",
+      "year": 2011
+    },
+    {
+      "id": 12620254,
+      "date_added": "2024-07-20T11:50:30-07:00",
+      "title": "Trench",
+      "artist": "Twenty One Pilots",
+      "cover_image": "https://i.discogs.com/JNf10qJ1bc3Dw8RuoMXzkhZEokRRx_1Rzzx-J32DDbw/rs:fit/g:sm/q:90/h:528/w:600/czM6Ly9kaXNjb2dz/LWRhdGFiYXNlLWlt/YWdlcy9SLTEyNjIw/MjU0LTE1NDAxMjY0/OTEtOTE4My5wbmc.jpeg",
+      "thumb": "https://i.discogs.com/oFOPWlka6wv5rnMrEy0FpvszwuBI45ZZAZVuJQnVb9A/rs:fit/g:sm/q:40/h:150/w:150/czM6Ly9kaXNjb2dz/LWRhdGFiYXNlLWlt/YWdlcy9SLTEyNjIw/MjU0LTE1NDAxMjY0/OTEtOTE4My5wbmc.jpeg",
+      "year": 2018
+    },
+    {
+      "id": 15141620,
+      "date_added": "2024-07-06T23:46:15-07:00",
+      "title": "Metropolis Pt. 2: Scenes From A Memory",
+      "artist": "Dream Theater",
+      "cover_image": "https://i.discogs.com/fK_ivh5FVntOQy82I3IWGPp0A-xyy1mOnC-KyW68oW0/rs:fit/g:sm/q:90/h:596/w:600/czM6Ly9kaXNjb2dz/LWRhdGFiYXNlLWlt/YWdlcy9SLTE1MTQx/NjIwLTE1ODcyMjA1/NDYtNDA0My5qcGVn.jpeg",
+      "thumb": "https://i.discogs.com/5Xo_2Xw7dl0USkbIiowe6G-ggZ2icUh464_DdDnz9uA/rs:fit/g:sm/q:40/h:150/w:150/czM6Ly9kaXNjb2dz/LWRhdGFiYXNlLWlt/YWdlcy9SLTE1MTQx/NjIwLTE1ODcyMjA1/NDYtNDA0My5qcGVn.jpeg",
+      "year": 1999
+    }
+  ]
+}

@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Maarten van der Blij</title>
+  <link href="https://fonts.googleapis.com/css2?family=Permanent+Marker&family=Courier+Prime:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --papier: #f5f0e8;
+      --lijn: #c8bfa8;
+      --potlood: #3a3530;
+      --accent: #d45f2e;
+      --licht-accent: #f0d5c5;
+      --blauw: #2c5f8a;
+      --groen: #3a7d44;
+      --schets-lijn: 2px solid #9e9085;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: #e8e2d6;
+      font-family: 'Courier Prime', monospace;
+      color: var(--potlood);
+      min-height: 100vh;
+      background-image: repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 27px,
+        rgba(180,160,130,0.2) 27px,
+        rgba(180,160,130,0.2) 28px
+      );
+    }
+
+    .container {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 24px 16px;
+    }
+
+    /* ── HEADER ── */
+    .header {
+      background: var(--papier);
+      border: var(--schets-lijn);
+      border-radius: 4px;
+      padding: 20px 24px;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      position: relative;
+      box-shadow: 4px 4px 0 var(--lijn);
+    }
+
+    .avatar-box {
+      width: 80px;
+      height: 80px;
+      border: var(--schets-lijn);
+      border-radius: 50%;
+      background: var(--licht-accent);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 28px;
+      flex-shrink: 0;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .avatar-box img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 50%;
+    }
+
+    .header-info h1 {
+      font-family: 'Permanent Marker', cursive;
+      font-size: 26px;
+      color: var(--accent);
+      line-height: 1.1;
+    }
+
+    .header-info .tagline {
+      font-size: 13px;
+      color: #6b6055;
+      margin-top: 4px;
+      font-style: italic;
+    }
+
+    /* ── SECTIES ── */
+    .sectie {
+      background: var(--papier);
+      border: var(--schets-lijn);
+      border-radius: 3px;
+      margin-bottom: 20px;
+      box-shadow: 4px 4px 0 var(--lijn);
+      overflow: hidden;
+    }
+
+    .sectie-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px 16px;
+      border-bottom: var(--schets-lijn);
+      background: white;
+    }
+
+    .sectie-icon {
+      font-size: 20px;
+    }
+
+    .sectie-titel {
+      font-family: 'Permanent Marker', cursive;
+      font-size: 18px;
+      color: var(--potlood);
+    }
+
+    .sectie-body {
+      padding: 16px;
+    }
+
+    .placeholder {
+      color: var(--lijn);
+      font-style: italic;
+      font-size: 13px;
+    }
+
+    /* ── PLATENKAST ── */
+    .platenkast-grid {
+      display: flex;
+      gap: 16px;
+      overflow-x: auto;
+      padding-bottom: 4px;
+    }
+
+    .platenkast-grid::-webkit-scrollbar {
+      height: 6px;
+    }
+
+    .platenkast-grid::-webkit-scrollbar-track {
+      background: var(--licht-accent);
+    }
+
+    .platenkast-grid::-webkit-scrollbar-thumb {
+      background: var(--lijn);
+      border-radius: 3px;
+    }
+
+    .plaat-kaart {
+      flex: 0 0 auto;
+      width: 160px;
+      text-align: left;
+    }
+
+    .plaat-cover-wrap {
+      width: 160px;
+      height: 160px;
+      border: var(--schets-lijn);
+      background: var(--licht-accent);
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .plaat-cover {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .plaat-cover-placeholder {
+      font-size: 40px;
+      opacity: 0.4;
+    }
+
+    .plaat-info {
+      margin-top: 7px;
+    }
+
+    .plaat-artiest {
+      font-size: 12px;
+      font-weight: bold;
+      color: var(--potlood);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .plaat-titel {
+      font-size: 11px;
+      color: #6b6055;
+      font-style: italic;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      margin-top: 2px;
+    }
+
+    .plaat-jaar {
+      font-size: 10px;
+      color: var(--lijn);
+      margin-top: 2px;
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+
+  <!-- HEADER -->
+  <div class="header">
+    <div class="avatar-box">&#128100;</div>
+    <div class="header-info">
+      <h1>Maarten van der Blij</h1>
+      <p class="tagline">"mijn kleine hoekje van het internet"</p>
+    </div>
+  </div>
+
+  <!-- PLATENKAST SECTIE -->
+  <div class="sectie" id="cds">
+    <div class="sectie-header">
+      <span class="sectie-icon">&#128191;</span>
+      <span class="sectie-titel">Mijn Platenkast</span>
+    </div>
+    <div class="sectie-body">
+      <div id="platenkast-grid" class="platenkast-grid">
+        <p class="placeholder">Platen worden geladen...</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- FILM SECTIE -->
+  <div class="sectie" id="films">
+    <div class="sectie-header">
+      <span class="sectie-icon">&#127909;</span>
+      <span class="sectie-titel">Filmreviews</span>
+    </div>
+    <div class="sectie-body">
+      <p class="placeholder">Hier komen de filmreviews...</p>
+    </div>
+  </div>
+
+  <!-- RECEPTEN SECTIE -->
+  <div class="sectie" id="recepten">
+    <div class="sectie-header">
+      <span class="sectie-icon">&#127859;</span>
+      <span class="sectie-titel">Favoriete Recepten</span>
+    </div>
+    <div class="sectie-body">
+      <p class="placeholder">Hier komen de recepten...</p>
+    </div>
+  </div>
+
+  <!-- BLOG SECTIE -->
+  <div class="sectie" id="blog">
+    <div class="sectie-header">
+      <span class="sectie-icon">&#9997;&#65039;</span>
+      <span class="sectie-titel">Blog</span>
+    </div>
+    <div class="sectie-body">
+      <p class="placeholder">Hier komen de blogberichten...</p>
+    </div>
+  </div>
+
+</div>
+
+
+<script>
+  function escape(str) {
+    return String(str)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;');
+  }
+
+  async function laadPlatenkast() {
+    const grid = document.getElementById('platenkast-grid');
+    try {
+      const resp = await fetch('/api/discogs');
+      if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+      const data = await resp.json();
+
+      if (!data.releases || data.releases.length === 0) {
+        grid.innerHTML = '<p class="placeholder">Nog geen platen beschikbaar.</p>';
+        return;
+      }
+
+      grid.innerHTML = data.releases.map(r => {
+        const cover = r.cover_image || r.thumb;
+        const coverHtml = cover
+          ? `<img class="plaat-cover" src="${escape(cover)}" alt="${escape(r.title)}" loading="lazy" onerror="this.parentElement.innerHTML='<span class=plaat-cover-placeholder>&#128191;</span>'">`
+          : `<span class="plaat-cover-placeholder">&#128191;</span>`;
+        return `
+          <div class="plaat-kaart">
+            <div class="plaat-cover-wrap">${coverHtml}</div>
+            <div class="plaat-info">
+              <div class="plaat-artiest">${escape(r.artist)}</div>
+              <div class="plaat-titel">${escape(r.title)}</div>
+              ${r.year ? `<div class="plaat-jaar">${escape(r.year)}</div>` : ''}
+            </div>
+          </div>`;
+      }).join('');
+    } catch (e) {
+      console.error('Platenkast fout:', e);
+      grid.innerHTML = '<p class="placeholder">Platen konden niet worden geladen.</p>';
+    }
+  }
+
+  laadPlatenkast();
+</script>
+</body>
+</html>
