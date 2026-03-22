@@ -1,0 +1,26 @@
+{
+  "name": "homepage",
+  "version": "1.0.0",
+  "description": "Persoonlijke homepage van Maarten van der Blij. Gebouwd als statische HTML-pagina, geserveerd via een kleine Node.js server.",
+  "main": "fetch-discogs.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/MaartenBlij/Homepage.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/MaartenBlij/Homepage/issues"
+  },
+  "homepage": "https://github.com/MaartenBlij/Homepage#readme",
+  "dependencies": {
+    "gray-matter": "^4.0.3",
+    "marked": "^17.0.5"
+  }
+}

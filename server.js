@@ -15,6 +15,10 @@ const http = require('http');
 const https = require('https');
 const fs = require('fs');
 const path = require('path');
+const matter = require('gray-matter');
+const { marked } = require('marked');
+
+const CONTENT_DIR = path.join(__dirname, 'content');
 
 const PORT = process.env.PORT || 3000;
 const CACHE_FILE = path.join(__dirname, 'discogs-data.json');
@@ -117,6 +121,31 @@ async function getDiscogsData() {
   return fetchInProgress;
 }
 
+// ── Content inlezen (optioneel gefilterd op tag) ───────────────────────────────
+function laadContent(tagFilter) {
+  if (!fs.existsSync(CONTENT_DIR)) return [];
+
+  return fs.readdirSync(CONTENT_DIR)
+    .filter(f => f.endsWith('.md'))
+    .map(bestand => {
+      const inhoud = fs.readFileSync(path.join(CONTENT_DIR, bestand), 'utf8');
+      const { data, content } = matter(inhoud);
+      const slug = bestand.replace(/\.md$/, '');
+      return {
+        slug,
+        title:          data.title          || slug,
+        date:           data.date           ? new Date(data.date).toISOString() : null,
+        tags:           data.tags           || [],
+        excerpt:        data.excerpt        || '',
+        porties:        data.porties        || null,
+        bereidingstijd: data.bereidingstijd || null,
+        html:           marked(content)
+      };
+    })
+    .filter(item => !tagFilter || item.tags.includes(tagFilter))
+    .sort((a, b) => new Date(b.date) - new Date(a.date));
+}
+
 // ── Statische bestanden serveren ──────────────────────────────────────────────
 function serveStatic(req, res) {
   let filePath = path.join(__dirname, req.url === '/' ? 'index.html' : req.url);
@@ -140,7 +169,41 @@ function serveStatic(req, res) {
 
 // ── HTTP server ───────────────────────────────────────────────────────────────
 const server = http.createServer(async (req, res) => {
-  const url = req.url.split('?')[0];
+  const [urlPath, queryString] = req.url.split('?');
+  const url = urlPath;
+  const params = new URLSearchParams(queryString || '');
+
+  if (url === '/api/content') {
+    try {
+      const items = laadContent(params.get('tag') || null);
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify(items));
+    } catch (err) {
+      console.error('[content] Fout:', err.message);
+      res.writeHead(500, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ error: err.message }));
+    }
+    return;
+  }
+
+  const contentMatch = url.match(/^\/api\/content\/(.+)$/);
+  if (contentMatch) {
+    try {
+      const slug = contentMatch[1];
+      const item = laadContent(null).find(p => p.slug === slug);
+      if (!item) {
+        res.writeHead(404, { 'Content-Type': 'application/json' });
+        return res.end(JSON.stringify({ error: 'Niet gevonden' }));
+      }
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify(item));
+    } catch (err) {
+      console.error('[content] Fout:', err.message);
+      res.writeHead(500, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ error: err.message }));
+    }
+    return;
+  }
 
   if (url === '/api/discogs') {
     try {
