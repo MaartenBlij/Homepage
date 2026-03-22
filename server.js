@@ -21,9 +21,11 @@ const { marked } = require('marked');
 const CONTENT_DIR = path.join(__dirname, 'content');
 
 const PORT = process.env.PORT || 3000;
-const CACHE_FILE = path.join(__dirname, 'discogs-data.json');
+const CACHE_FILE = path.join(__dirname, 'data', 'discogs-data.json');
 const CONFIG_FILE = path.join(__dirname, 'discogs.config.json');
 const CACHE_MAX_AGE_MS = 24 * 60 * 60 * 1000; // 24 uur
+const LETTERBOXD_CACHE_FILE = path.join(__dirname, 'data', 'letterboxd-data.json');
+const LETTERBOXD_CONFIG_FILE = path.join(__dirname, 'letterboxd.config.json');
 
 const MIME_TYPES = {
   '.html': 'text/html; charset=utf-8',
@@ -121,6 +123,124 @@ async function getDiscogsData() {
   return fetchInProgress;
 }
 
+// ── Letterboxd RSS ophalen ────────────────────────────────────────────────────
+function httpsGetText(url) {
+  return new Promise((resolve, reject) => {
+    https.get(url, { headers: { 'User-Agent': 'HomepageFilms/1.0' } }, (res) => {
+      if (res.statusCode === 301 || res.statusCode === 302) {
+        return resolve(httpsGetText(res.headers.location));
+      }
+      let body = '';
+      res.on('data', chunk => body += chunk);
+      res.on('end', () => {
+        if (res.statusCode !== 200) {
+          reject(new Error(`Letterboxd HTTP ${res.statusCode}`));
+        } else {
+          resolve(body);
+        }
+      });
+    }).on('error', reject);
+  });
+}
+
+function parseLetterboxdRSS(xml) {
+  const entries = [];
+  const itemPattern = /<item>([\s\S]*?)<\/item>/g;
+  let match;
+
+  while ((match = itemPattern.exec(xml)) !== null) {
+    const item = match[1];
+
+    const getTag = (tag) => {
+      const escaped = tag.replace(':', '\\:');
+      const m = item.match(new RegExp(`<${escaped}[^>]*>([\\s\\S]*?)<\\/${escaped}>`));
+      if (!m) return null;
+      return m[1].replace(/<!\[CDATA\[([\s\S]*?)\]\]>/g, '$1').trim();
+    };
+
+    const filmTitle = getTag('letterboxd:filmTitle');
+    if (!filmTitle) continue;
+
+    const filmYear    = getTag('letterboxd:filmYear');
+    const watchedDate = getTag('letterboxd:watchedDate');
+    const pubDate     = getTag('pubDate');
+    const ratingStr   = getTag('letterboxd:rating');
+    const description = getTag('description');
+
+    const posterMatch = description?.match(/<img[^>]+src="([^"]+)"/);
+    const posterUrl   = posterMatch ? posterMatch[1] : null;
+
+    let reviewHtml = null;
+    if (description) {
+      const withoutPoster = description.replace(/<p>\s*<img[^>]+>\s*<\/p>\s*/i, '').trim();
+      if (withoutPoster) reviewHtml = withoutPoster;
+    }
+
+    const linkMatch = item.match(/<link>([^<\s]+)<\/link>/);
+    const guidMatch = item.match(/<guid[^>]*>([^<]+)<\/guid>/);
+    const link = linkMatch?.[1]?.trim() || guidMatch?.[1]?.trim();
+
+    const slugMatch = link?.match(/\/film\/([^/]+)\/?$/);
+    const filmSlug  = slugMatch ? slugMatch[1] : filmTitle.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+    const watchedDateStr = watchedDate || (pubDate ? new Date(pubDate).toISOString().split('T')[0] : null);
+
+    let pubDateIso = null;
+    try { pubDateIso = pubDate ? new Date(pubDate).toISOString() : null; } catch {}
+
+    entries.push({
+      slug: `${filmSlug}-${filmYear || '0'}-${watchedDateStr}`,
+      filmTitle,
+      filmYear:     filmYear ? parseInt(filmYear) : null,
+      watchedDate:  watchedDateStr,
+      pubDate:      pubDateIso,
+      rating:       ratingStr ? parseFloat(ratingStr) : null,
+      reviewHtml,
+      posterUrl,
+      letterboxdUrl: link?.startsWith('http') ? link : null
+    });
+  }
+
+  return entries;
+}
+
+async function fetchVanLetterboxd() {
+  if (!fs.existsSync(LETTERBOXD_CONFIG_FILE)) {
+    throw new Error('letterboxd.config.json niet gevonden');
+  }
+  const { username } = JSON.parse(fs.readFileSync(LETTERBOXD_CONFIG_FILE, 'utf8'));
+  const url = `https://letterboxd.com/${encodeURIComponent(username)}/rss/`;
+
+  console.log(`[letterboxd] RSS ophalen voor: ${username}`);
+  const xml = await httpsGetText(url);
+  const entries = parseLetterboxdRSS(xml);
+
+  const output = { fetched_at: new Date().toISOString(), entries };
+  fs.writeFileSync(LETTERBOXD_CACHE_FILE, JSON.stringify(output, null, 2), 'utf8');
+  console.log(`[letterboxd] ${entries.length} films opgeslagen in cache`);
+  return output;
+}
+
+let letterboxdFetchInProgress = null;
+
+async function getLetterboxdData() {
+  if (letterboxdFetchInProgress) return letterboxdFetchInProgress;
+
+  if (fs.existsSync(LETTERBOXD_CACHE_FILE)) {
+    const stats = fs.statSync(LETTERBOXD_CACHE_FILE);
+    const data  = JSON.parse(fs.readFileSync(LETTERBOXD_CACHE_FILE, 'utf8'));
+    const leeftijdMs = Date.now() - stats.mtimeMs;
+    const heeftData  = data.entries && data.entries.length > 0;
+
+    if (heeftData && leeftijdMs < CACHE_MAX_AGE_MS) {
+      console.log(`[letterboxd] Cache gebruikt (${Math.round(leeftijdMs / 3600000)}u oud)`);
+      return data;
+    }
+  }
+
+  letterboxdFetchInProgress = fetchVanLetterboxd().finally(() => { letterboxdFetchInProgress = null; });
+  return letterboxdFetchInProgress;
+}
+
 // ── Content inlezen (optioneel gefilterd op tag) ───────────────────────────────
 function laadContent(tagFilter) {
   if (!fs.existsSync(CONTENT_DIR)) return [];
@@ -214,6 +334,19 @@ const server = http.createServer(async (req, res) => {
       console.error('[discogs] Fout:', err.message);
       res.writeHead(500, { 'Content-Type': 'application/json' });
       res.end(JSON.stringify({ error: err.message, releases: [] }));
+    }
+    return;
+  }
+
+  if (url === '/api/letterboxd') {
+    try {
+      const data = await getLetterboxdData();
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify(data));
+    } catch (err) {
+      console.error('[letterboxd] Fout:', err.message);
+      res.writeHead(500, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ error: err.message, entries: [] }));
     }
     return;
   }

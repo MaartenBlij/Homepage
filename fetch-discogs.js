@@ -20,7 +20,7 @@ const fs = require('fs');
 const path = require('path');
 
 const CONFIG_FILE = path.join(__dirname, 'discogs.config.json');
-const CACHE_FILE = path.join(__dirname, 'discogs-data.json');
+const CACHE_FILE = path.join(__dirname, 'data', 'discogs-data.json');
 const CACHE_MAX_AGE_MS = 24 * 60 * 60 * 1000; // 24 uur
 
 // --- Config laden ---
