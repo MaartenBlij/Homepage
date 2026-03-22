@@ -7,34 +7,26 @@
  * Gebruik:
  *   node fetch-discogs.js
  *
- * Vereist een discogs.config.json naast dit bestand:
- *   {
- *     "consumer_key": "...",
- *     "consumer_secret": "...",
- *     "username": "..."
- *   }
+ * Vereist de volgende omgevingsvariabelen:
+ *   DISCOGS_CONSUMER_KEY
+ *   DISCOGS_CONSUMER_SECRET
+ *   DISCOGS_USERNAME
  */
 
 const https = require('https');
 const fs = require('fs');
 const path = require('path');
 
-const CONFIG_FILE = path.join(__dirname, 'discogs.config.json');
 const CACHE_FILE = path.join(__dirname, 'data', 'discogs-data.json');
 const CACHE_MAX_AGE_MS = 24 * 60 * 60 * 1000; // 24 uur
 
-// --- Config laden ---
-if (!fs.existsSync(CONFIG_FILE)) {
-  console.error(`Fout: ${CONFIG_FILE} niet gevonden.`);
-  console.error('Maak een discogs.config.json aan op basis van discogs.config.example.json');
-  process.exit(1);
-}
-
-const config = JSON.parse(fs.readFileSync(CONFIG_FILE, 'utf8'));
-const { consumer_key, consumer_secret, username } = config;
+// --- Config laden uit omgevingsvariabelen ---
+const consumer_key    = process.env.DISCOGS_CONSUMER_KEY;
+const consumer_secret = process.env.DISCOGS_CONSUMER_SECRET;
+const username        = process.env.DISCOGS_USERNAME;
 
 if (!consumer_key || !consumer_secret || !username) {
-  console.error('Fout: discogs.config.json moet consumer_key, consumer_secret en username bevatten.');
+  console.error('Fout: omgevingsvariabelen DISCOGS_CONSUMER_KEY, DISCOGS_CONSUMER_SECRET en DISCOGS_USERNAME zijn vereist.');
   process.exit(1);
 }
 

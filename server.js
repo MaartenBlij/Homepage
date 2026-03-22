@@ -22,10 +22,8 @@ const CONTENT_DIR = path.join(__dirname, 'content');
 
 const PORT = process.env.PORT || 3000;
 const CACHE_FILE = path.join(__dirname, 'data', 'discogs-data.json');
-const CONFIG_FILE = path.join(__dirname, 'discogs.config.json');
 const CACHE_MAX_AGE_MS = 24 * 60 * 60 * 1000; // 24 uur
 const LETTERBOXD_CACHE_FILE = path.join(__dirname, 'data', 'letterboxd-data.json');
-const LETTERBOXD_CONFIG_FILE = path.join(__dirname, 'letterboxd.config.json');
 
 const MIME_TYPES = {
   '.html': 'text/html; charset=utf-8',
@@ -40,14 +38,6 @@ const MIME_TYPES = {
   '.ico':  'image/x-icon',
   '.woff2':'font/woff2',
 };
-
-// ── Config laden ──────────────────────────────────────────────────────────────
-function loadConfig() {
-  if (!fs.existsSync(CONFIG_FILE)) {
-    throw new Error(`${CONFIG_FILE} niet gevonden. Maak het aan op basis van discogs.config.example.json`);
-  }
-  return JSON.parse(fs.readFileSync(CONFIG_FILE, 'utf8'));
-}
 
 // ── Discogs ophalen ───────────────────────────────────────────────────────────
 function httpsGet(url, headers) {
@@ -70,8 +60,14 @@ function httpsGet(url, headers) {
   });
 }
 
-async function fetchVanDiscogs(config) {
-  const { consumer_key, consumer_secret, username } = config;
+async function fetchVanDiscogs() {
+  const consumer_key    = process.env.DISCOGS_CONSUMER_KEY;
+  const consumer_secret = process.env.DISCOGS_CONSUMER_SECRET;
+  const username        = process.env.DISCOGS_USERNAME;
+
+  if (!consumer_key || !consumer_secret || !username) {
+    throw new Error('Omgevingsvariabelen DISCOGS_CONSUMER_KEY, DISCOGS_CONSUMER_SECRET en DISCOGS_USERNAME zijn niet ingesteld.');
+  }
   const url = `https://api.discogs.com/users/${encodeURIComponent(username)}/collection/folders/0/releases?sort=added&sort_order=desc&per_page=5`;
   const headers = {
     'Authorization': `Discogs key=${consumer_key}, secret=${consumer_secret}`,
@@ -118,8 +114,7 @@ async function getDiscogsData() {
   }
 
   // Cache ontbreekt, leeg of verouderd → ophalen
-  const config = loadConfig();
-  fetchInProgress = fetchVanDiscogs(config).finally(() => { fetchInProgress = null; });
+  fetchInProgress = fetchVanDiscogs().finally(() => { fetchInProgress = null; });
   return fetchInProgress;
 }
 
@@ -204,10 +199,10 @@ function parseLetterboxdRSS(xml) {
 }
 
 async function fetchVanLetterboxd() {
-  if (!fs.existsSync(LETTERBOXD_CONFIG_FILE)) {
-    throw new Error('letterboxd.config.json niet gevonden');
+  const username = process.env.LETTERBOXD_USERNAME;
+  if (!username) {
+    throw new Error('Omgevingsvariabele LETTERBOXD_USERNAME is niet ingesteld.');
   }
-  const { username } = JSON.parse(fs.readFileSync(LETTERBOXD_CONFIG_FILE, 'utf8'));
   const url = `https://letterboxd.com/${encodeURIComponent(username)}/rss/`;
 
   console.log(`[letterboxd] RSS ophalen voor: ${username}`);
