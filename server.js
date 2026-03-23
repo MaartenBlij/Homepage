@@ -18,6 +18,10 @@ const path = require('path');
 const matter = require('gray-matter');
 const { marked } = require('marked');
 
+if (process.env.NODE_ENV !== 'production') {
+  require('dotenv').config();
+}
+
 const CONTENT_DIR = path.join(__dirname, 'content');
 
 const PORT = process.env.PORT || 3000;

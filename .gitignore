@@ -1,5 +1,6 @@
-Discogs.md
+credentials.md
 discogs.config.json
 letterboxd.config.json
 node_modules
 Beheer
+.env
